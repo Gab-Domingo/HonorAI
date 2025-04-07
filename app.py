@@ -1,6 +1,6 @@
 import streamlit as st
-import tempfile
 import os
+import shutil
 from document_processor import process_document, extract_document_text
 from legal_ner import extract_legal_entities
 from vector_store import create_document_embeddings, perform_document_search
@@ -13,6 +13,15 @@ st.set_page_config(
     page_icon="⚖️",
     layout="wide"
 )
+
+# Cleanup temp directory at startup
+temp_dir = "temp"
+if os.path.exists(temp_dir):
+    try:
+        shutil.rmtree(temp_dir)
+    except Exception as e:
+        st.error(f"Error cleaning temp directory: {e}")
+os.makedirs(temp_dir, exist_ok=True)
 
 # Initialize session state
 if "chat_history" not in st.session_state:
@@ -43,9 +52,12 @@ with tab1:
     # Document processing section
     if uploaded_file is not None:
         with st.spinner("Processing document..."):
-            # Save uploaded file to temp file
-            temp_dir = tempfile.TemporaryDirectory()
-            temp_path = os.path.join(temp_dir.name, uploaded_file.name)
+            # Create a temporary file with explicit permissions
+            # Make sure the temporary directory exists with proper permissions
+            os.makedirs("temp", exist_ok=True)
+            
+            # Save the file to our own temp directory instead of using tempfile
+            temp_path = os.path.join("temp", uploaded_file.name)
             with open(temp_path, "wb") as f:
                 f.write(uploaded_file.getbuffer())
             
