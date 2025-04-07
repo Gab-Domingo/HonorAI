@@ -87,4 +87,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 - OpenAI for GPT-4o API
 - Streamlit for the web framework
-- SpaCy for NLP capabilities
+- SpaCy for NLP capabilities# HonorAI
